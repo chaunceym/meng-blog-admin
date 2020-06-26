@@ -9,7 +9,6 @@ const {Option} = Select;
 const {TextArea} = Input
 
 const AddArticle = (props) => {
-  const input = '# This is a header\n\nAnd this is a paragraph'
   const [articleId, setArticleId] = useState(0)  // 文章的ID，如果是0说明是新增加，如果不是0，说明是修改
   const [articleTitle, setArticleTitle] = useState('')   //文章标题
   const [articleContent, setArticleContent] = useState('')  //markdown的编辑内容
@@ -46,7 +45,7 @@ const AddArticle = (props) => {
   const selectType = (value) => {
     setSelectType(value)
   }
-  const saveArticle = () => {
+  const checkArticleAttr = () => {
     if (!articleTitle) {
       return message.warning('文章名不能为空')
     } else if (!articleContent) {
@@ -56,7 +55,40 @@ const AddArticle = (props) => {
     } else if (!showDate) {
       return message.warning('发布日期不能为空')
     }
-    message.success('验证通过')
+  }
+  const saveArticle = () => {
+    checkArticleAttr()
+    const articleAttr = {
+      type_id: selectedType,
+      title: articleTitle,
+      article_content: articleContent,
+      introduce: introducemd
+    }
+    const dateText = showDate.replace('-', '/')
+    articleAttr.addTime = (new Date(dateText).getTime()) / 1000
+    if (articleId === 0) {
+      articleAttr.view_count = Math.ceil(Math.random() * 100) + 1000
+      axios({
+        url: servicePath.addArticle,
+        method: 'post',
+        data: articleAttr,
+        withCredentials: true
+      })
+        .then(data => {
+          if (data.data.message === '添加成功') {
+            setArticleId(data.data.insertId)
+            message.success('添加成功')
+            setArticleTitle('')
+            setArticleContent('')
+            setIntroducemd('')
+          } else {
+            message.error('添加失败')
+          }
+        })
+        .catch(err => {
+          message.error('添加失败')
+        })
+    }
   }
   const changeIntroducemd = (e) => {
     setIntroducemd(e.target.value)
