@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import {Layout, Menu, Breadcrumb} from 'antd';
+import {Route} from 'react-router-dom'
+import AddArticle from "./AddArticle"
 import './AdminIndex.css'
 import {UserOutlined, VideoCameraOutlined} from '@ant-design/icons'
 
@@ -24,7 +26,7 @@ function AdminIndex() {
             <span>工作台</span>
           </Menu.Item>
           <Menu.Item key="2" icon={<VideoCameraOutlined/>}>
-            <span>添加文章</span>
+            <span>文章列表</span>
           </Menu.Item>
           <SubMenu
             key="sub1"
@@ -46,15 +48,18 @@ function AdminIndex() {
         </Menu>
       </Sider>
       <Layout>
-        <Header style={{background: '#fff', padding: 0}}/>
         <Content style={{margin: '0 16px'}}>
           <Breadcrumb style={{margin: '16px 0'}}>
             <Breadcrumb.Item>后台管理</Breadcrumb.Item>
             <Breadcrumb.Item>工作台</Breadcrumb.Item>
           </Breadcrumb>
-          <div style={{padding: 24, background: '#fff', minHeight: 360}}>博客工作台.</div>
+          <div style={{padding: 24, background: '#fff', minHeight: 360}}>
+            <div>
+              <Route path="/index" exact component={AddArticle}/>
+            </div>
+          </div>
         </Content>
-        <Footer style={{textAlign: 'center'}}>JSPang.com</Footer>
+        <Footer style={{textAlign: 'center'}}>mengxiangyu.top</Footer>
       </Layout>
     </Layout>
   )
