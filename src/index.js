@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import Main from "./router/Main"
 import 'antd/dist/antd.css'
 
 ReactDOM.render(
-  <App/>,
+  <Main/>,
   document.getElementById('root')
 );
 

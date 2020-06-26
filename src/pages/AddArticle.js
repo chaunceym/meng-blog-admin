@@ -4,6 +4,7 @@ import {Row, message, Col, Input, Select, Button, DatePicker} from 'antd'
 import ReactMarkdown from "react-markdown"
 import servicePath from "../config/config"
 import axios from "axios"
+import CodeBlock from "../util/CodeBlock"
 
 const {Option} = Select;
 const {TextArea} = Input
@@ -144,7 +145,12 @@ const AddArticle = (props) => {
             </Col>
             <Col span={12}>
               <div className="show-html">
-                <ReactMarkdown source={articleContent}/>
+                <ReactMarkdown source={articleContent}
+                               renderers={{
+                                 code: CodeBlock
+                               }}
+                               escapeHtml={false}/>
+
               </div>
             </Col>
           </Row>

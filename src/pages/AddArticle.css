@@ -31,15 +31,10 @@
   border-radius: 5px;
 }
 
-.show-html pre > code {
-  color: #000;
-}
-
 .show-html code {
   padding: 5px 10px;
   border-radius: 5px;
   margin: 0px 3px;
-  color: #ff502c;
 }
 
 .show-html blockquote {

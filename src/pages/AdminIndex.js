@@ -4,19 +4,26 @@ import {Route} from 'react-router-dom'
 import AddArticle from "./AddArticle"
 import './AdminIndex.css'
 import {UserOutlined, VideoCameraOutlined} from '@ant-design/icons'
+import ArticleList from "./ArticleList"
 
-const {Header, Content, Footer, Sider} = Layout;
+const {Content, Footer, Sider} = Layout;
 const {SubMenu} = Menu;
 
 
-function AdminIndex() {
+function AdminIndex(props) {
 
   const [collapsed, setCollapsed] = useState(false)
 
   const onCollapse = collapsed => {
     setCollapsed(collapsed)
   };
-
+  const updateArticle = (e) => {
+    if (e.key === 'addArticle') {
+      props.history.push('/index/add')
+    } else if (e.key === 'articleList') {
+      props.history.push('/index/list')
+    }
+  }
   return (
     <Layout style={{minHeight: '100vh'}}>
       <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
@@ -30,6 +37,7 @@ function AdminIndex() {
           </Menu.Item>
           <SubMenu
             key="sub1"
+            onClick={updateArticle}
             title={
               <span>
                   <span>文章管理</span>
@@ -37,8 +45,8 @@ function AdminIndex() {
             }
             icon={<VideoCameraOutlined/>}
           >
-            < Menu.Item key="3">添加文章</Menu.Item>
-            <Menu.Item key="4">文章列表</Menu.Item>
+            < Menu.Item key="addArticle">添加文章</Menu.Item>
+            <Menu.Item key="articleList">文章列表</Menu.Item>
 
           </SubMenu>
 
@@ -55,7 +63,8 @@ function AdminIndex() {
           </Breadcrumb>
           <div style={{padding: 24, background: '#fff', minHeight: 360}}>
             <div>
-              <Route path="/index" exact component={AddArticle}/>
+              <Route path="/index/add" component={AddArticle}/>
+              <Route path="/index/list" component={ArticleList}/>
             </div>
           </div>
         </Content>

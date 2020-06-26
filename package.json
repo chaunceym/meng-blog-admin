@@ -10,11 +10,14 @@
     "antd": "^4.3.5",
     "axios": "^0.19.2",
     "egg-cors": "^2.2.3",
+    "highlight.js": "^10.1.1",
+    "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-markdown": "^4.3.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "react-syntax-highlighter": "^12.2.1"
   },
   "scripts": {
     "start": "react-scripts start",

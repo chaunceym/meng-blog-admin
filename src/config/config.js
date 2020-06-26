@@ -3,5 +3,6 @@ const servicePath = {
   checkLogin: `${adminUrl}checkLogin`,
   getTypeInfo: `${adminUrl}getTypeInfo`,
   addArticle: `${adminUrl}addArticle`,
+  updateArticle: `${adminUrl}updateArticle`,
 }
 export default servicePath
