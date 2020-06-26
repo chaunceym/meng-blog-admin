@@ -6,5 +6,6 @@ const servicePath = {
   updateArticle: `${adminUrl}updateArticle`,
   getArticleList: `${adminUrl}getArticleList`,
   deleteArticle: `${adminUrl}deleteArticle/`,
+  getArticleInfo: `${adminUrl}getArticleInfo/`,
 }
 export default servicePath

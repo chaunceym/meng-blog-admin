@@ -25,7 +25,6 @@ const AddArticle = (props) => {
       withCredentials: true
     })
       .then(data => {
-        console.log(data)
         if (data.data.message === '没有登录') {
           localStorage.removeItem('openId')
           props.history.push('/')
@@ -36,8 +35,31 @@ const AddArticle = (props) => {
       .catch(err => {
       })
   }
-
+  const getArticleInfo = () => {
+    const {id} = props.location.query
+    if (id) {
+      axios({
+        url: servicePath.getArticleInfo + id,
+        header: {'Access-Control-Allow-Origin': '*'},
+        withCredentials: true
+      })
+        .then(data => {
+          const articleInfo = data.data.data[0]
+          setArticleTitle(articleInfo.title)
+          setArticleContent(articleInfo.article_content)
+          setIntroducemd(articleInfo.introduce)
+          setShowDate(articleInfo.addTime)
+          setSelectType(articleInfo.typeId)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    } else {
+      return null
+    }
+  }
   useEffect(() => {
+    getArticleInfo()
     getTypeInfo()
   }, [])
   const inputValueChange = (e) => {
@@ -67,29 +89,26 @@ const AddArticle = (props) => {
     }
     const dateText = showDate.replace('-', '/')
     articleAttr.addTime = (new Date(dateText).getTime()) / 1000
-    if (articleId === 0) {
-      articleAttr.view_count = Math.ceil(Math.random() * 100) + 1000
-      axios({
-        url: servicePath.addArticle,
-        method: 'post',
-        data: articleAttr,
-        withCredentials: true
-      })
-        .then(data => {
-          if (data.data.message === '添加成功') {
-            setArticleId(data.data.insertId)
-            message.success('添加成功')
-            setArticleTitle('')
-            setArticleContent('')
-            setIntroducemd('')
-          } else {
-            message.error('添加失败')
-          }
-        })
-        .catch(err => {
+    articleAttr.view_count = Math.ceil(Math.random() * 100) + 1000
+    axios({
+      url: servicePath.addArticle,
+      method: 'post',
+      data: articleAttr,
+      withCredentials: true
+    })
+      .then(data => {
+        if (data.data.message === '添加成功') {
+          message.success('添加成功')
+          setArticleTitle('')
+          setArticleContent('')
+          setIntroducemd('')
+        } else {
           message.error('添加失败')
-        })
-    }
+        }
+      })
+      .catch(err => {
+        message.error('添加失败')
+      })
   }
   const changeIntroducemd = (e) => {
     setIntroducemd(e.target.value)

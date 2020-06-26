@@ -39,6 +39,9 @@ const ArticleList = (props) => {
       }
     })
   }
+  const updateArticle = (id) => {
+    props.history.push({ pathname: '/index/add', query: {id: id} })
+  }
   useEffect(() => {
     getArticleList()
   }, [])
@@ -76,7 +79,7 @@ const ArticleList = (props) => {
             </Col>
 
             <Col span={4}>
-              <Button type="primary">修改</Button>&nbsp;
+              <Button onClick={() => updateArticle(item.id)} type="primary">修改</Button>&nbsp;
               <Button onClick={() => deleteArticle(item.id)}>删除</Button>
             </Col>
           </List.Item>
