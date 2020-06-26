@@ -1,12 +1,14 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './AddArticle.css'
 import {Row, Col, Input, Select, Button, DatePicker} from 'antd'
 import ReactMarkdown from "react-markdown"
+import servicePath from "../config/config"
+import axios from "axios"
 
 const {Option} = Select;
 const {TextArea} = Input
 
-const AddArticle = () => {
+const AddArticle = (props) => {
   const input = '# This is a header\n\nAnd this is a paragraph'
   const [articleId, setArticleId] = useState(0)  // 文章的ID，如果是0说明是新增加，如果不是0，说明是修改
   const [articleTitle, setArticleTitle] = useState('')   //文章标题
@@ -18,9 +20,33 @@ const AddArticle = () => {
   const [updateDate, setUpdateDate] = useState() //修改日志的日期
   const [typeInfo, setTypeInfo] = useState([]) // 文章类别信息
   const [selectedType, setSelectType] = useState(1) //选择的文章类别
+  const getTypeInfo = () => {
+    axios({
+      url: servicePath.getTypeInfo,
+      header: {'Access-Control-Allow-Origin': '*'},
+      withCredentials: true
+    })
+      .then(data => {
+        console.log(data)
+        if (data.data.message === '没有登录') {
+          localStorage.removeItem('openId')
+          props.history.push('/')
+        } else {
+          setTypeInfo(data.data.data)
+        }
+      })
+      .catch(err => {
+      })
+  }
+
+  useEffect(() => {
+    getTypeInfo()
+  }, [])
   const inputValueChange = (e) => {
-    console.log(e.target.value)
     setArticleContent(e.target.value)
+  }
+  const selectType = () =>{
+
   }
   return (
     <div>
@@ -34,8 +60,12 @@ const AddArticle = () => {
             </Col>
             <Col span={3}>
               &nbsp;
-              <Select defaultValue="Sign Up" size="large">
-                <Option value="Sign Up">视频教程</Option>
+              <Select defaultValue={selectedType} size="large" onChange={selectType}>
+                {
+                  typeInfo.map((item, index) => {
+                    return (<Option key={index} value={item.id}>{item.typeName}</Option>)
+                  })
+                }
               </Select>
             </Col>
           </Row>
