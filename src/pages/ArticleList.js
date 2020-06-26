@@ -16,6 +16,28 @@ const ArticleList = (props) => {
       .then(data => {
         setList(data.data.data)
       })
+      .catch(err => {
+        message.error('获取文章列表失败')
+      })
+  }
+  const deleteArticle = (id) => {
+    confirm({
+      title: '确认删除?',
+      onOk() {
+        axios(servicePath.deleteArticle + id, {withCredentials: true})
+          .then(data => {
+            if (data.data.message === '删除成功') {
+              message.success('删除成功')
+              getArticleList()
+            } else {
+              message.error('删除失败')
+            }
+          })
+          .catch(err => {
+            message.error('删除失败')
+          })
+      }
+    })
   }
   useEffect(() => {
     getArticleList()
@@ -55,7 +77,7 @@ const ArticleList = (props) => {
 
             <Col span={4}>
               <Button type="primary">修改</Button>&nbsp;
-              <Button>删除</Button>
+              <Button onClick={() => deleteArticle(item.id)}>删除</Button>
             </Col>
           </List.Item>
         )}
