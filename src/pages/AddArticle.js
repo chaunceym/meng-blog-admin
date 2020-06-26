@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import './AddArticle.css'
-import {Row, Col, Input, Select, Button, DatePicker} from 'antd'
+import {Row, message, Col, Input, Select, Button, DatePicker} from 'antd'
 import ReactMarkdown from "react-markdown"
 import servicePath from "../config/config"
 import axios from "axios"
@@ -13,9 +13,7 @@ const AddArticle = (props) => {
   const [articleId, setArticleId] = useState(0)  // 文章的ID，如果是0说明是新增加，如果不是0，说明是修改
   const [articleTitle, setArticleTitle] = useState('')   //文章标题
   const [articleContent, setArticleContent] = useState('')  //markdown的编辑内容
-  const [markdownContent, setMarkdownContent] = useState('预览内容') //html内容
-  const [introducemd, setIntroducemd] = useState()            //简介的markdown内容
-  const [introducehtml, setIntroducehtml] = useState('等待编辑') //简介的html内容
+  const [introducemd, setIntroducemd] = useState('')            //简介的markdown内容
   const [showDate, setShowDate] = useState()   //发布日期
   const [updateDate, setUpdateDate] = useState() //修改日志的日期
   const [typeInfo, setTypeInfo] = useState([]) // 文章类别信息
@@ -45,8 +43,23 @@ const AddArticle = (props) => {
   const inputValueChange = (e) => {
     setArticleContent(e.target.value)
   }
-  const selectType = () =>{
-
+  const selectType = (value) => {
+    setSelectType(value)
+  }
+  const saveArticle = () => {
+    if (!articleTitle) {
+      return message.warning('文章名不能为空')
+    } else if (!articleContent) {
+      return message.warning('文章内容不能为空')
+    } else if (!introducemd) {
+      return message.warning('文章简介不能为空')
+    } else if (!showDate) {
+      return message.warning('发布日期不能为空')
+    }
+    message.success('验证通过')
+  }
+  const changeIntroducemd = (e) => {
+    setIntroducemd(e.target.value)
   }
   return (
     <div>
@@ -55,6 +68,8 @@ const AddArticle = (props) => {
           <Row gutter={10}>
             <Col span={21}>
               <Input
+                value={articleTitle}
+                onChange={e => setArticleTitle(e.target.value)}
                 placeholder="博客标题"
                 size="large"/>
             </Col>
@@ -72,13 +87,15 @@ const AddArticle = (props) => {
           <br/>
           <Row gutter={10}>
             <Col span={24}>
-              <DatePicker placeholder="发布日期" size="large"/>&nbsp;&nbsp;
+              <DatePicker onChange={(date, dateString) => setShowDate(dateString)} placeholder="发布日期"
+                          size="large"/>&nbsp;&nbsp;
               <Button size="large">暂存文章</Button>&nbsp;&nbsp;
-              <Button type="primary" size="large">发布文章</Button>
+              <Button type="primary" size="large" onClick={saveArticle}>发布文章</Button>
             </Col>
             <Col span={24}>
               <br/>
-              <TextArea autoSize={true} rows={4} placeholder="文章简介" allowClear={true}/>
+              <TextArea onInput={changeIntroducemd} value={introducemd} autoSize={true} rows={4} placeholder="文章简介"
+                        allowClear={true}/>
               <br/>
               <br/>
             </Col>
