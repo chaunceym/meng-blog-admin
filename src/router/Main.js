@@ -10,8 +10,6 @@ const Main = () => {
     <Router>
       <Route path="/login" exact component={Login}/>
       <Route path="/index" component={AdminIndex}/>
-      <Route path="/index/add" exact component={AddArticle}/>
-      <Route path="/index/list" exact component={ArticleList}/>
     </Router>
   )
 }
