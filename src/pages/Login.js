@@ -4,8 +4,6 @@ import {UserOutlined, UnorderedListOutlined} from '@ant-design/icons'
 import './Login.css'
 import axios from "axios"
 import servicePath from "../config/config"
-import {withRouter} from 'react-router-dom'
-
 const Login = (props) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -41,7 +39,7 @@ const Login = (props) => {
         }
       })
       .catch(err => {
-        console.log(err)
+        message.error('登录失败')
       })
   }
   return (

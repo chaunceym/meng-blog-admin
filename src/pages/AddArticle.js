@@ -1,23 +1,24 @@
 import React, {useEffect, useState} from 'react';
 import './AddArticle.css'
-import {Row, message, Col, Input, Select, Button, DatePicker} from 'antd'
+import {Row, message, Col, Input, Select, Button, DatePicker, Tag} from 'antd'
 import ReactMarkdown from "react-markdown"
 import servicePath from "../config/config"
 import axios from "axios"
 import CodeBlock from "../util/CodeBlock"
+import moment from "moment"
 
 const {Option} = Select;
 const {TextArea} = Input
 
 const AddArticle = (props) => {
-  const [articleId, setArticleId] = useState(0)  // 文章的ID，如果是0说明是新增加，如果不是0，说明是修改
-  const [articleTitle, setArticleTitle] = useState('')   //文章标题
-  const [articleContent, setArticleContent] = useState('')  //markdown的编辑内容
-  const [introducemd, setIntroducemd] = useState('')            //简介的markdown内容
-  const [showDate, setShowDate] = useState()   //发布日期
-  const [updateDate, setUpdateDate] = useState() //修改日志的日期
-  const [typeInfo, setTypeInfo] = useState([]) // 文章类别信息
-  const [selectedType, setSelectType] = useState(1) //选择的文章类别
+  const [articleId, setArticleId] = useState(0)
+  const [articleTitle, setArticleTitle] = useState('')
+  const [articleContent, setArticleContent] = useState('')
+  const [introducemd, setIntroducemd] = useState('')
+  const [showDate, setShowDate] = useState(moment(moment(Date.now()).format().split('T')[0], 'YYYY-MM-DD'))   //发布日期
+  const [typeInfo, setTypeInfo] = useState([])
+  const [selectedType, setSelectType] = useState(1)
+  const [isDraft, setIsDraft] = useState(false)
   const getTypeInfo = () => {
     axios({
       url: servicePath.getTypeInfo,
@@ -27,7 +28,8 @@ const AddArticle = (props) => {
       .then(data => {
         if (data.data.message === '没有登录') {
           localStorage.removeItem('openId')
-          props.history.push('/')
+          message.warning('请登录')
+          props.history.push('/login')
         } else {
           setTypeInfo(data.data.data)
         }
@@ -35,61 +37,52 @@ const AddArticle = (props) => {
       .catch(err => {
       })
   }
-  const getArticleInfo = () => {
-    const {id} = props.location.query
-    if (id) {
-      axios({
-        url: servicePath.getArticleInfo + id,
-        header: {'Access-Control-Allow-Origin': '*'},
-        withCredentials: true
+  const getArticleInfo = (id) => {
+    axios({
+      url: servicePath.getArticleInfo + id,
+      header: {'Access-Control-Allow-Origin': '*'},
+      withCredentials: true
+    })
+      .then(data => {
+        const articleInfo = data.data.data[0]
+        if (articleInfo.isDraft) {
+          setIsDraft(true)
+        }
+        setArticleTitle(articleInfo.title)
+        setArticleContent(articleInfo.article_content)
+        setIntroducemd(articleInfo.introduce)
+        setShowDate(moment(articleInfo.addTime, 'YYYY-MM-DD'))
+        setSelectType(articleInfo.typeId)
       })
-        .then(data => {
-          const articleInfo = data.data.data[0]
-          setArticleTitle(articleInfo.title)
-          setArticleContent(articleInfo.article_content)
-          setIntroducemd(articleInfo.introduce)
-          setShowDate(articleInfo.addTime)
-          setSelectType(articleInfo.typeId)
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    } else {
-      return null
-    }
+      .catch(err => {
+        message.error('获取文章失败')
+      })
+
   }
-  useEffect(() => {
-    getArticleInfo()
-    getTypeInfo()
-  }, [])
-  const inputValueChange = (e) => {
-    setArticleContent(e.target.value)
+  const saveArticleUpdate = (id, articleAttr) => {
+    axios({
+      url: servicePath.updateArticle + id,
+      method: 'post',
+      data: articleAttr,
+      header: {'Access-Control-Allow-Origin': '*'},
+      withCredentials: true
+    })
+      .then(data => {
+        if (data.data.message === '修改成功') {
+          message.success('修改成功')
+          setArticleTitle('')
+          setArticleContent('')
+          setIntroducemd('')
+        } else {
+          message.error('修改失败')
+        }
+      })
+      .catch(err => {
+        message.error('修改失败')
+      })
+
   }
-  const selectType = (value) => {
-    setSelectType(value)
-  }
-  const checkArticleAttr = () => {
-    if (!articleTitle) {
-      return message.warning('文章名不能为空')
-    } else if (!articleContent) {
-      return message.warning('文章内容不能为空')
-    } else if (!introducemd) {
-      return message.warning('文章简介不能为空')
-    } else if (!showDate) {
-      return message.warning('发布日期不能为空')
-    }
-  }
-  const saveArticle = () => {
-    checkArticleAttr()
-    const articleAttr = {
-      type_id: selectedType,
-      title: articleTitle,
-      article_content: articleContent,
-      introduce: introducemd
-    }
-    const dateText = showDate.replace('-', '/')
-    articleAttr.addTime = (new Date(dateText).getTime()) / 1000
-    articleAttr.view_count = Math.ceil(Math.random() * 100) + 1000
+  const saveArticleAdd = (articleAttr) => {
     axios({
       url: servicePath.addArticle,
       method: 'post',
@@ -110,8 +103,70 @@ const AddArticle = (props) => {
         message.error('添加失败')
       })
   }
+  useEffect(() => {
+    getTypeInfo()
+    if (props.location.query) {
+      const {id} = props.location.query
+      if (id) {
+        setArticleId(id)
+        getArticleInfo(id)
+      }
+    }
+  }, [])
+  const inputValueChange = (e) => {
+    setArticleContent(e.target.value)
+  }
+  const selectType = (value) => {
+    setSelectType(value)
+  }
+  const articleAttr = () => {
+    const articleAttr = {
+      type_id: selectedType,
+      title: articleTitle,
+      article_content: articleContent,
+      introduce: introducemd
+    }
+    const dateText = showDate._i.replace('-', '/')
+    articleAttr.addTime = (new Date(dateText).getTime()) / 1000
+    articleAttr.view_count = Math.ceil(Math.random() * 100) + 1000
+    return articleAttr
+  }
+  const checkArticleAttr = () => {
+    if (!articleTitle) {
+      return message.warning('文章名不能为空')
+    } else if (!articleContent) {
+      return message.warning('文章内容不能为空')
+    } else if (!introducemd) {
+      return message.warning('文章简介不能为空')
+    } else if (!showDate) {
+      return message.warning('发布日期不能为空')
+    }
+  }
+  const saveArticle = () => {
+    checkArticleAttr()
+    const articleAttrValue = articleAttr()
+    if (articleId === 0) {
+      articleAttrValue.isDraft = false
+      saveArticleAdd(articleAttrValue)
+    } else {
+      articleAttrValue.id = articleId
+      saveArticleUpdate(articleId, articleAttrValue)
+    }
+  }
   const changeIntroducemd = (e) => {
     setIntroducemd(e.target.value)
+  }
+  const saveAsDraft = () => {
+    checkArticleAttr()
+    const articleAttrValue = articleAttr()
+    if (articleId === 0) {
+      articleAttrValue.isDraft = true
+      saveArticleAdd(articleAttrValue)
+    } else {
+      articleAttrValue.id = articleId
+      articleAttrValue.isDraft = true
+      saveArticleUpdate(articleId, articleAttrValue)
+    }
   }
   return (
     <div>
@@ -127,7 +182,7 @@ const AddArticle = (props) => {
             </Col>
             <Col span={3}>
               &nbsp;
-              <Select defaultValue={selectedType} size="large" onChange={selectType}>
+              <Select className="article-type" value={selectedType} size="large" onChange={selectType}>
                 {
                   typeInfo.map((item, index) => {
                     return (<Option key={index} value={item.id}>{item.typeName}</Option>)
@@ -139,10 +194,15 @@ const AddArticle = (props) => {
           <br/>
           <Row gutter={10}>
             <Col span={24}>
-              <DatePicker onChange={(date, dateString) => setShowDate(dateString)} placeholder="发布日期"
+              <DatePicker value={showDate}
+                          onChange={(date, dateString) => setShowDate(moment(dateString, 'YYYY-MM-DD'))}
+                          placeholder="发布日期"
                           size="large"/>&nbsp;&nbsp;
-              <Button size="large">暂存文章</Button>&nbsp;&nbsp;
-              <Button type="primary" size="large" onClick={saveArticle}>发布文章</Button>
+              <Button size="large" onClick={saveAsDraft}>暂存文章</Button>&nbsp;&nbsp;
+              <Button type="primary" size="large" onClick={saveArticle}>发布文章</Button>&nbsp;&nbsp;
+              {
+                isDraft && <Tag color="red">草稿</Tag>
+              }
             </Col>
             <Col span={24}>
               <br/>
@@ -172,10 +232,6 @@ const AddArticle = (props) => {
 
               </div>
             </Col>
-          </Row>
-        </Col>
-        <Col span={6}>
-          <Row>
           </Row>
         </Col>
       </Row>

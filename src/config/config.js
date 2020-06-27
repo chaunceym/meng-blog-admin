@@ -3,7 +3,7 @@ const servicePath = {
   checkLogin: `${adminUrl}checkLogin`,
   getTypeInfo: `${adminUrl}getTypeInfo`,
   addArticle: `${adminUrl}addArticle`,
-  updateArticle: `${adminUrl}updateArticle`,
+  updateArticle: `${adminUrl}updateArticle/`,
   getArticleList: `${adminUrl}getArticleList`,
   deleteArticle: `${adminUrl}deleteArticle/`,
   getArticleInfo: `${adminUrl}getArticleInfo/`,
