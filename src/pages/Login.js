@@ -1,6 +1,6 @@
-import React, {useState} from 'react'
-import {Card, Input, Button, Spin, message} from 'antd'
-import {UserOutlined, UnorderedListOutlined} from '@ant-design/icons'
+import React, { useState } from 'react'
+import { Card, Input, Button, Spin, message } from 'antd'
+import { UserOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import './Login.css'
 import axios from "axios"
 import servicePath from "../config/config"
@@ -21,7 +21,7 @@ const Login = (props) => {
       return message.error('密码不能为空')
     }
     setIsLoading(true)
-    const userInfo = {username, password}
+    const userInfo = { username, password }
     axios({
       url: servicePath.checkLogin,
       method: 'post',
@@ -30,7 +30,6 @@ const Login = (props) => {
     })
       .then(data => {
         setIsLoading(false)
-        console.log(data.data.message === '登录成功')
         if (data.data.message === '登录成功') {
           localStorage.setItem('openId', data.data.openId)
           props.history.push('/index')
@@ -39,23 +38,24 @@ const Login = (props) => {
         }
       })
       .catch(err => {
+        setIsLoading(false)
         message.error('登录失败')
       })
   }
   return (
     <div className="login-div">
       <Spin tip="loading..." spinning={isLoading}>
-        <Card title="白日梦的博客管理系统" bordered={true} style={{width: 400}}>
+        <Card title="白日梦的博客管理系统" bordered={true} style={{ width: 400 }}>
           <Input onInput={getUsername} id="username" size="large" placeholder="输入用户名" value={username}
-                 prefix={<UserOutlined style={{color: 'rgba(0,0,0,.25'}}/>}
+            prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25' }} />}
           />
-          <br/>
-          <br/>
+          <br />
+          <br />
           <Input.Password onInput={getPassword} value={password} id="password" size="large" placeholder="输入密码"
-                          prefix={<UnorderedListOutlined style={{color: 'rgba(0,0,0,.25'}}/>}
+            prefix={<UnorderedListOutlined style={{ color: 'rgba(0,0,0,.25' }} />}
           />
-          <br/>
-          <br/>
+          <br />
+          <br />
           <Button onClick={checkLogin} type="primary" size="large" block>登录</Button>
         </Card>
       </Spin>

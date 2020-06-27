@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {List, Row, Col, Modal, message, Button} from 'antd';
+import React, { useState, useEffect } from 'react';
+import { List, Row, Col, Modal, message, Button, Tag } from 'antd';
 import axios from 'axios'
 import servicePath from '../config/config'
 
-const {confirm} = Modal;
+const { confirm } = Modal;
 
 const ArticleList = (props) => {
   const [list, setList] = useState([])
@@ -11,7 +11,7 @@ const ArticleList = (props) => {
     axios({
       url: servicePath.getArticleList,
       withCredentials: true,
-      header: {'Access-Control-Allow-Origin': '*'}
+      header: { 'Access-Control-Allow-Origin': '*' }
     })
       .then(data => {
         setList(data.data.data)
@@ -24,7 +24,7 @@ const ArticleList = (props) => {
     confirm({
       title: '确认删除?',
       onOk() {
-        axios(servicePath.deleteArticle + id, {withCredentials: true})
+        axios(servicePath.deleteArticle + id, { withCredentials: true })
           .then(data => {
             if (data.data.message === '删除成功') {
               message.success('删除成功')
@@ -40,7 +40,7 @@ const ArticleList = (props) => {
     })
   }
   const updateArticle = (id) => {
-    props.history.push({ pathname: '/index/add', query: {id: id} })
+    props.history.push({ pathname: '/index/add', query: { id: id } })
   }
   useEffect(() => {
     getArticleList()
@@ -53,7 +53,7 @@ const ArticleList = (props) => {
             <Col span={8}> <b>标题</b> </Col>
             <Col span={3}> <b>类别</b> </Col>
             <Col span={3}> <b>发布时间</b> </Col>
-            <Col span={3}> <b>集数</b> </Col>
+            <Col span={3}> <b>草稿</b> </Col>
             <Col span={3}> <b>浏览量</b> </Col>
             <Col span={4}> <b>操作</b> </Col>
           </Row>
@@ -72,7 +72,7 @@ const ArticleList = (props) => {
               {item.addTime}
             </Col>
             <Col span={3}>
-              共<span>{item.part_count}</span>集
+              <span>{item.isDraft ? <Tag color="red">是</Tag> : <Tag color="green">否</Tag>}</span>
             </Col>
             <Col span={3}>
               {item.view_count}
