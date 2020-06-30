@@ -12,6 +12,7 @@ const ImageManager = () => {
   }, [])
   const getImagesPath = () => {
     axios(servicePath.getImagesPath).then(data => {
+      console.log(data)
       setImagesManager([...data.data.data])
     })
   }
@@ -36,14 +37,15 @@ const ImageManager = () => {
         message.error('添加失败')
       })
   }
-  const deleteImage = () => {
+  const deleteImage = (id) => {
     confirm({
       title: '确认删除?',
       onOk() {
-        axios(servicePath.deleteImage)
+        axios(servicePath.deleteImage + id)
           .then(data => {
             if (data.data.message === '删除成功') {
               message.success('删除成功')
+              getImagesPath()
             } else {
               message.error('删除失败')
             }
@@ -71,10 +73,10 @@ const ImageManager = () => {
         renderItem={item => (
           <List.Item>
             <Col span={20}>
-              <a href={item} target="_blank">{item}</a>
+              <a href={item.path} target="_blank">{item.path}</a>
             </Col>
             <Col span={4}>
-              <Button danger onClick={deleteImage}>删除</Button>
+              <Button danger onClick={() => deleteImage(item.id)}>删除</Button>
             </Col>
           </List.Item>
         )}
