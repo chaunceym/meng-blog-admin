@@ -112,6 +112,25 @@ const AddArticle = (props) => {
         getArticleInfo(id)
       }
     }
+    const articleInfoOnLocal = localStorage.articleInfoOnLocal
+    if (articleInfoOnLocal) {
+      const parseArticleLocalInfo = JSON.parse(articleInfoOnLocal)
+      console.log(parseArticleLocalInfo)
+      setArticleTitle(articleInfoOnLocal.title)
+      setArticleContent(articleInfoOnLocal.article_content)
+      setIntroducemd(articleInfoOnLocal.introduce)
+      setShowDate(articleInfoOnLocal.showDate)
+      setSelectType(articleInfoOnLocal.typeId)
+    }
+    return () => {
+      localStorage.articleInfoOnLocal = JSON.stringify({
+        title: articleTitle,
+        article_content: articleContent,
+        introduce: introducemd,
+        showDate: showDate,
+        typeId: selectedType
+      })
+    }
   }, [])
   const inputValueChange = (e) => {
     setArticleContent(e.target.value)
@@ -143,6 +162,7 @@ const AddArticle = (props) => {
     }
   }
   const saveArticle = () => {
+    localStorage.removeItem('articleInfoOnLocal')
     checkArticleAttr()
     const articleAttrValue = articleAttr()
     if (articleId === 0) {
@@ -157,6 +177,7 @@ const AddArticle = (props) => {
     setIntroducemd(e.target.value)
   }
   const saveAsDraft = () => {
+    localStorage.removeItem('articleInfoOnLocal')
     checkArticleAttr()
     const articleAttrValue = articleAttr()
     if (articleId === 0) {

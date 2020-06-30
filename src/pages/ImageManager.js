@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
-import {List, Row, Col, message, Button, Modal} from 'antd';
+import {Button, Col, List, message, Modal, Row} from 'antd';
 import servicePath from "../config/config"
 
 const {confirm} = Modal;
@@ -12,8 +12,9 @@ const ImageManager = () => {
   }, [])
   const getImagesPath = () => {
     axios(servicePath.getImagesPath).then(data => {
-      console.log(data)
-      setImagesManager([...data.data.data])
+      if (data.data.message === '获取成功') {
+        setImagesManager([...data.data.data])
+      }
     })
   }
   const uploadImage = (e) => {
@@ -56,6 +57,17 @@ const ImageManager = () => {
       }
     })
   }
+  const copyImagePath = (id) => {
+    const input = document.getElementById('input')
+
+    const path = imagesManager.filter(item => {
+      return item.id === id
+    })
+    input.value = `![](${path[0].path})`
+    input.select()
+    document.execCommand('copy');
+    message.success('复制成功')
+  }
   return (
     <div>
       <div style={{marginBottom: '20px'}}>
@@ -73,9 +85,11 @@ const ImageManager = () => {
         renderItem={item => (
           <List.Item>
             <Col span={20}>
-              <a href={item.path} target="_blank">{item.path}</a>
+              <span>![](<a href={item.path}>{item.path}</a>)</span>
+              <input style={{opacity: '0'}} type="text" id="input"/>
             </Col>
             <Col span={4}>
+              <Button onClick={() => copyImagePath(item.id)}>复制</Button>&nbsp;
               <Button danger onClick={() => deleteImage(item.id)}>删除</Button>
             </Col>
           </List.Item>
