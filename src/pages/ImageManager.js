@@ -75,8 +75,9 @@ const ImageManager = () => {
       </div>
       <List
         header={
-          <Row className="list-div">
-            <Col span={20}> <b>地址</b> </Col>
+          <Row className="list-div" >
+            <Col span={12}> <b>地址</b> </Col>
+            <Col span={8}> <b>图片预览</b> </Col>
             <Col span={4}> <b>操作</b> </Col>
           </Row>
         }
@@ -84,9 +85,12 @@ const ImageManager = () => {
         dataSource={imagesManager}
         renderItem={item => (
           <List.Item>
-            <Col span={20}>
+            <Col span={12}>
               <span>![](<a href={item.path}>{item.path}</a>)</span>
               <input style={{opacity: '0'}} type="text" id="input"/>
+            </Col>
+            <Col span={8}>
+              <img width="50%" src={item.path} alt=""/>
             </Col>
             <Col span={4}>
               <Button onClick={() => copyImagePath(item.id)}>复制</Button>&nbsp;
