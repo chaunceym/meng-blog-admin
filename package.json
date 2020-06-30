@@ -8,6 +8,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "antd": "^4.3.5",
+    "antd-img-crop": "^3.9.0",
     "axios": "^0.19.2",
     "egg-cors": "^2.2.3",
     "highlight.js": "^10.1.1",
