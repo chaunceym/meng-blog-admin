@@ -1,34 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { List, Row, Col, Modal, message, Button, Tag } from 'antd';
+import React, {useState, useEffect} from 'react';
+import {List, Row, Col, Modal, message, Button, Tag, Pagination} from 'antd';
 import axios from 'axios'
 import servicePath from '../config/config'
 
-const { confirm } = Modal;
+const {confirm} = Modal;
 
 const ArticleList = (props) => {
   const [list, setList] = useState([])
+  const [listLength, setListLength] = useState([])
   const getArticleList = () => {
     axios({
       url: servicePath.getArticleList,
       withCredentials: true,
-      header: { 'Access-Control-Allow-Origin': '*' }
+      header: {'Access-Control-Allow-Origin': '*'}
     })
       .then(data => {
-        setList(data.data.data)
+        setListLength(data.data.data)
       })
       .catch(err => {
-        message.error('获取文章列表失败')
       })
   }
   const deleteArticle = (id) => {
     confirm({
       title: '确认删除?',
       onOk() {
-        axios(servicePath.deleteArticle + id, { withCredentials: true })
+        axios(servicePath.deleteArticle + id, {withCredentials: true})
           .then(data => {
             if (data.data.message === '删除成功') {
               message.success('删除成功')
-              getArticleList()
             } else {
               message.error('删除失败')
             }
@@ -40,11 +39,28 @@ const ArticleList = (props) => {
     })
   }
   const updateArticle = (id) => {
-    props.history.push({ pathname: '/index/add', query: { id: id } })
+    props.history.push({pathname: '/index/add', query: {id: id}})
+  }
+  const getArticleListByPage = (page = 1) => {
+    axios({
+      url: servicePath.getArticleListByPage + page,
+      withCredentials: true,
+      header: {'Access-Control-Allow-Origin': '*'}
+    })
+      .then(data => {
+        setList(data.data.data)
+      })
+      .catch(err => {
+        message.error('获取数据失败')
+      })
   }
   useEffect(() => {
     getArticleList()
+    getArticleListByPage()
   }, [])
+  const changePage = (page) => {
+    getArticleListByPage(page)
+  }
   return (
     <div>
       <List
@@ -85,9 +101,11 @@ const ArticleList = (props) => {
           </List.Item>
         )}
       />
+      <div style={{textAlign: 'center', marginTop: '10px'}}>
+        <Pagination defaultCurrent={1} onChange={changePage} total={listLength}/>
+      </div>
     </div>
   )
-
 }
 
 export default ArticleList
