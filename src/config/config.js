@@ -10,5 +10,6 @@ const servicePath = {
   uploadImage: `${adminUrl}uploadImage`,
   getImagesPath: `${adminUrl}getImagesPath`,
   deleteImage: `${adminUrl}deleteImage/`,
+  getArticleListByPage: `${adminUrl}getArticleListByPage/`,
 }
 export default servicePath
