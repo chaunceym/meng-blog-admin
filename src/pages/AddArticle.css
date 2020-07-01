@@ -85,3 +85,22 @@
 .date-select {
   margin-top: 10px;
 }
+
+.upload-image {
+  position: relative;
+}
+
+.upload-image button {
+  z-index: 0;
+}
+
+.upload-image input {
+  position: absolute;
+  width: 96px;
+  height: 40px;
+  top: -11px;
+  left: 0;
+  z-index: 1;
+  opacity: 0;
+}
+

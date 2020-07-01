@@ -3,7 +3,7 @@ import { Layout, Menu, Breadcrumb } from 'antd';
 import { Route } from 'react-router-dom'
 import AddArticle from "./AddArticle"
 import './AdminIndex.css'
-import { UserOutlined, VideoCameraOutlined, FormOutlined, MessageOutlined } from '@ant-design/icons'
+import { UserOutlined, FileImageOutlined, FormOutlined, MessageOutlined } from '@ant-design/icons'
 import ArticleList from "./ArticleList"
 import WorkPlace from "./WorkPlace"
 import CommentManager from "./CommentManager"
@@ -41,7 +41,7 @@ function AdminIndex(props) {
     } else if (e.key === '4') {
       props.history.push('/index/comment')
     }
-    const menuItemValue = ['工作台', '视频管理', '文章管理', '留言管理']
+    const menuItemValue = ['工作台', '图片管理', '文章管理', '留言管理']
     setMenuItem(menuItemValue[parseInt(e.key) - 1])
   }
   return (
@@ -52,7 +52,7 @@ function AdminIndex(props) {
           <Menu.Item key="1" icon={<UserOutlined />}>
             工作台
           </Menu.Item>
-          <Menu.Item key="2" icon={<VideoCameraOutlined />}>
+          <Menu.Item key="2" icon={<FileImageOutlined  />}>
             图片管理
           </Menu.Item>
           <SubMenu key="3" onClick={updateArticle}

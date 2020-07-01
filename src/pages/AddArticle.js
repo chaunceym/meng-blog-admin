@@ -11,6 +11,7 @@ const {Option} = Select;
 const {TextArea} = Input
 
 const AddArticle = (props) => {
+  const [getType, setGetType] = useState(true)
   const [articleId, setArticleId] = useState(0)
   const [articleTitle, setArticleTitle] = useState('')
   const [articleContent, setArticleContent] = useState('')
@@ -20,6 +21,7 @@ const AddArticle = (props) => {
   const [selectedType, setSelectType] = useState(1)
   const [isDraft, setIsDraft] = useState(false)
   const getTypeInfo = () => {
+    setGetType(false)
     axios({
       url: servicePath.getTypeInfo,
       header: {'Access-Control-Allow-Origin': '*'},
@@ -103,8 +105,25 @@ const AddArticle = (props) => {
         message.error('添加失败')
       })
   }
+  const getLocalInfo = () => {
+    if (localStorage.articleInfoLocal) {
+      const articleInfoLocal = JSON.parse(localStorage.getItem('articleInfoLocal'))
+      const {articleTitle, articleContent, selectedType, introducemd} = articleInfoLocal
+      setArticleTitle(articleTitle)
+      setArticleContent(articleContent)
+      setSelectType(selectedType)
+      setIntroducemd(introducemd)
+    }
+  }
+  const setLocalInfo = () => {
+    const articleInfoLocal = {articleTitle, articleContent, selectedType, introducemd}
+    localStorage.setItem('articleInfoLocal', JSON.stringify(articleInfoLocal))
+  }
   useEffect(() => {
-    getTypeInfo()
+    if (getType) {
+      getTypeInfo()
+      getLocalInfo()
+    }
     if (props.location.query) {
       const {id} = props.location.query
       if (id) {
@@ -112,26 +131,10 @@ const AddArticle = (props) => {
         getArticleInfo(id)
       }
     }
-    const articleInfoOnLocal = localStorage.articleInfoOnLocal
-    if (articleInfoOnLocal) {
-      const parseArticleLocalInfo = JSON.parse(articleInfoOnLocal)
-      console.log(parseArticleLocalInfo)
-      setArticleTitle(articleInfoOnLocal.title)
-      setArticleContent(articleInfoOnLocal.article_content)
-      setIntroducemd(articleInfoOnLocal.introduce)
-      setShowDate(articleInfoOnLocal.showDate)
-      setSelectType(articleInfoOnLocal.typeId)
-    }
     return () => {
-      localStorage.articleInfoOnLocal = JSON.stringify({
-        title: articleTitle,
-        article_content: articleContent,
-        introduce: introducemd,
-        showDate: showDate,
-        typeId: selectedType
-      })
+      setLocalInfo()
     }
-  }, [])
+  }, [articleTitle, articleContent, selectedType, introducemd])
   const inputValueChange = (e) => {
     setArticleContent(e.target.value)
   }
@@ -162,7 +165,7 @@ const AddArticle = (props) => {
     }
   }
   const saveArticle = () => {
-    localStorage.removeItem('articleInfoOnLocal')
+    localStorage.removeItem('articleInfoLocal')
     checkArticleAttr()
     const articleAttrValue = articleAttr()
     if (articleId === 0) {
@@ -177,7 +180,8 @@ const AddArticle = (props) => {
     setIntroducemd(e.target.value)
   }
   const saveAsDraft = () => {
-    localStorage.removeItem('articleInfoOnLocal')
+    localStorage.removeItem('articleInfoLocal')
+    console.log(localStorage.articleInfoLocal)
     checkArticleAttr()
     const articleAttrValue = articleAttr()
     if (articleId === 0) {
@@ -188,6 +192,30 @@ const AddArticle = (props) => {
       articleAttrValue.isDraft = true
       saveArticleUpdate(articleId, articleAttrValue)
     }
+  }
+  const uploadImage = (e) => {
+    const file = e.target.files[0]
+    const formData = new FormData()
+    formData.append('image', file)
+    axios({
+      url: servicePath.uploadImage,
+      method: 'post',
+      data: formData
+    })
+      .then(data => {
+        if (data.data.message === '添加成功') {
+          const input = document.getElementById('input')
+          input.value = `![](${data.data.data})`
+          input.select()
+          document.execCommand('copy');
+          message.success('添加成功并且复制')
+        } else {
+          message.error('添加失败')
+        }
+      })
+      .catch(err => {
+        message.error('添加失败')
+      })
   }
   return (
     <div>
@@ -215,6 +243,11 @@ const AddArticle = (props) => {
           <br/>
           <Row gutter={10}>
             <Col span={24}>
+              <span className="upload-image">
+                <Button size="large">上传图片</Button>
+                <input type="file" title="" onChange={uploadImage}/>
+              </span>
+              &nbsp;&nbsp;
               <DatePicker value={showDate}
                           onChange={(date, dateString) => setShowDate(moment(dateString, 'YYYY-MM-DD'))}
                           placeholder="发布日期"
@@ -224,6 +257,7 @@ const AddArticle = (props) => {
               {
                 isDraft && <Tag color="red">草稿</Tag>
               }
+              <input type="text" style={{opacity: '0'}} id="input"/>
             </Col>
             <Col span={24}>
               <br/>

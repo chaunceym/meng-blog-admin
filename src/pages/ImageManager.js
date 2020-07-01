@@ -17,27 +17,6 @@ const ImageManager = () => {
       }
     })
   }
-  const uploadImage = (e) => {
-    const file = e.target.files[0]
-    const formData = new FormData()
-    formData.append('image', file)
-    axios({
-      url: servicePath.uploadImage,
-      method: 'post',
-      data: formData
-    })
-      .then(data => {
-        if (data.data.message === '添加成功') {
-          message.success('添加成功')
-          getImagesPath()
-        } else {
-          message.error('添加失败')
-        }
-      })
-      .catch(err => {
-        message.error('添加失败')
-      })
-  }
   const deleteImage = (id) => {
     confirm({
       title: '确认删除?',
@@ -71,13 +50,13 @@ const ImageManager = () => {
   return (
     <div>
       <div style={{marginBottom: '20px'}}>
-        <input type="file" onChange={uploadImage}/>
+        <input style={{opacity: '0'}} type="text" id="input"/>
       </div>
       <List
         header={
-          <Row className="list-div" >
-            <Col span={12}> <b>地址</b> </Col>
+          <Row className="list-div">
             <Col span={8}> <b>图片预览</b> </Col>
+            <Col span={12}> <b>图片地址</b> </Col>
             <Col span={4}> <b>操作</b> </Col>
           </Row>
         }
@@ -85,12 +64,13 @@ const ImageManager = () => {
         dataSource={imagesManager}
         renderItem={item => (
           <List.Item>
-            <Col span={12}>
-              <span>![](<a href={item.path}>{item.path}</a>)</span>
-              <input style={{opacity: '0'}} type="text" id="input"/>
-            </Col>
             <Col span={8}>
-              <img width="50%" src={item.path} alt=""/>
+              <a rel="noopener noreferrer" href={item.path} target={'_blank'}>
+                <img width="35%" src={item.path} alt=""/>
+              </a>
+            </Col>
+            <Col span={12}>
+              <span>{item.path}</span>
             </Col>
             <Col span={4}>
               <Button onClick={() => copyImagePath(item.id)}>复制</Button>&nbsp;
