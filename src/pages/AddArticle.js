@@ -181,7 +181,6 @@ const AddArticle = (props) => {
   }
   const saveAsDraft = () => {
     localStorage.removeItem('articleInfoLocal')
-    console.log(localStorage.articleInfoLocal)
     checkArticleAttr()
     const articleAttrValue = articleAttr()
     if (articleId === 0) {
@@ -193,29 +192,57 @@ const AddArticle = (props) => {
       saveArticleUpdate(articleId, articleAttrValue)
     }
   }
+  const changeImageSize = (file, fileType) => {
+    const reader = new FileReader()
+    reader.onload = (readerEvent) => {
+      const image = new Image()
+      image.onload = () => {
+        const canvas = document.createElement('canvas')
+        const max_size = 500;
+        let {width, height} = image
+        if (width > height) {
+          if (width > max_size) {
+            height *= max_size / width;
+            width = max_size;
+          }
+        } else {
+          if (height > max_size) {
+            width *= max_size / height;
+            height = max_size;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL(fileType);
+        axios({
+          url: servicePath.uploadImage,
+          method: 'post',
+          data: {dataUrl}
+        })
+          .then(data => {
+            if (data.data.message === '添加成功') {
+              const input = document.getElementById('input')
+              input.value = `![](${data.data.data})`
+              input.select()
+              document.execCommand('copy');
+              message.success('添加成功并且复制')
+            } else {
+              message.error('添加失败')
+            }
+          })
+          .catch(err => {
+            message.error('添加失败')
+          })
+      }
+      image.src = readerEvent.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
   const uploadImage = (e) => {
     const file = e.target.files[0]
-    const formData = new FormData()
-    formData.append('image', file)
-    axios({
-      url: servicePath.uploadImage,
-      method: 'post',
-      data: formData
-    })
-      .then(data => {
-        if (data.data.message === '添加成功') {
-          const input = document.getElementById('input')
-          input.value = `![](${data.data.data})`
-          input.select()
-          document.execCommand('copy');
-          message.success('添加成功并且复制')
-        } else {
-          message.error('添加失败')
-        }
-      })
-      .catch(err => {
-        message.error('添加失败')
-      })
+    const fileType = file.type
+    changeImageSize(file, fileType)
   }
   return (
     <div>
