@@ -122,14 +122,14 @@ const AddArticle = (props) => {
   useEffect(() => {
     if (getType) {
       getTypeInfo()
-      getLocalInfo()
-    }
     if (props.location.query) {
       const {id} = props.location.query
       if (id) {
-        setArticleId(id)
-        getArticleInfo(id)
+	setArticleId(id)
+	getArticleInfo(id)
       }
+    }
+      getLocalInfo()
     }
     return () => {
       setLocalInfo()
@@ -173,6 +173,7 @@ const AddArticle = (props) => {
       saveArticleAdd(articleAttrValue)
     } else {
       articleAttrValue.id = articleId
+      articleAttrValue.isDraft = false
       saveArticleUpdate(articleId, articleAttrValue)
     }
   }

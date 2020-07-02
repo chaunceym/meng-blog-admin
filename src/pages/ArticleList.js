@@ -8,6 +8,7 @@ const {confirm} = Modal;
 const ArticleList = (props) => {
   const [list, setList] = useState([])
   const [listLength, setListLength] = useState([])
+const [currentPage,setCurrentPage] = useState(1)
   const getArticleList = () => {
     axios({
       url: servicePath.getArticleList,
@@ -28,6 +29,7 @@ const ArticleList = (props) => {
           .then(data => {
             if (data.data.message === '删除成功') {
               message.success('删除成功')
+    	      getArticleListByPage(currentPage)
             } else {
               message.error('删除失败')
             }
@@ -59,6 +61,7 @@ const ArticleList = (props) => {
     getArticleListByPage()
   }, [])
   const changePage = (page) => {
+    setCurrentPage(page)
     getArticleListByPage(page)
   }
   return (
