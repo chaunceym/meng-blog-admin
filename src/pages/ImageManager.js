@@ -5,7 +5,7 @@ import servicePath from "../config/config"
 
 const {confirm} = Modal;
 
-const ImageManager = () => {
+const ImageManager = (props) => {
   const [imagesManager, setImagesManager] = useState([])
   useEffect(() => {
     getImagesPath()
@@ -21,14 +21,19 @@ const ImageManager = () => {
     confirm({
       title: '确认删除?',
       onOk() {
-        axios(servicePath.deleteImage + id)
+        axios({
+		url:servicePath.deleteImage + id,
+		withCredentials: true
+	})
           .then(data => {
             if (data.data.message === '删除成功') {
               message.success('删除成功')
               getImagesPath()
-            } else {
+            } else if(data.data.message === '没有登录'){
+		props.history.push('/login')
+            }else{
               message.error('删除失败')
-            }
+	    }
           })
           .catch(err => {
             message.error('删除失败')

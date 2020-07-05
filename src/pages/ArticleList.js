@@ -16,7 +16,11 @@ const [currentPage,setCurrentPage] = useState(1)
       header: {'Access-Control-Allow-Origin': '*'}
     })
       .then(data => {
-        setListLength(data.data.data)
+	if(data.data.message === '没有登录'){
+	   props.history.push('/login')
+	}else{
+	   setListLength(data.data.data)
+	}
       })
       .catch(err => {
       })
