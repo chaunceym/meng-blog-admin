@@ -24,12 +24,10 @@ const AddArticle = (props) => {
     setGetType(false)
     axios({
       url: servicePath.getTypeInfo,
-      header: {'Access-Control-Allow-Origin': '*'},
       withCredentials: true
     })
       .then(data => {
         if (data.data.message === '没有登录') {
-          localStorage.removeItem('openId')
           message.warning('请登录')
           props.history.push('/login')
         } else {
@@ -42,7 +40,6 @@ const AddArticle = (props) => {
   const getArticleInfo = (id) => {
     axios({
       url: servicePath.getArticleInfo + id,
-      header: {'Access-Control-Allow-Origin': '*'},
       withCredentials: true
     })
       .then(data => {
@@ -66,7 +63,6 @@ const AddArticle = (props) => {
       url: servicePath.updateArticle + id,
       method: 'post',
       data: articleAttr,
-      header: {'Access-Control-Allow-Origin': '*'},
       withCredentials: true
     })
       .then(data => {

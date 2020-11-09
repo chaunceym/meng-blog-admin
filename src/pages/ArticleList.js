@@ -13,7 +13,6 @@ const [currentPage,setCurrentPage] = useState(1)
     axios({
       url: servicePath.getArticleList,
       withCredentials: true,
-      header: {'Access-Control-Allow-Origin': '*'}
     })
       .then(data => {
 	if(data.data.message === '没有登录'){
@@ -51,7 +50,6 @@ const [currentPage,setCurrentPage] = useState(1)
     axios({
       url: servicePath.getArticleListByPage + page,
       withCredentials: true,
-      header: {'Access-Control-Allow-Origin': '*'}
     })
       .then(data => {
         setList(data.data.data)
